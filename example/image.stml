@@ -1,0 +1,5 @@
+(version "0.0.0")
+(document
+  (image
+    "GNU Savannah Logo"
+    "https://savannah.gnu.org/images/Savannah.theme/floating.png"))

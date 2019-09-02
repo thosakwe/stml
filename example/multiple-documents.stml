@@ -1,0 +1,13 @@
+(version "0.0.0")
+(document
+  (path "index.stml")
+  "This is the root."
+  (link "About Us" "about.stml"))
+(document
+  (path "about.stml")
+  "Welcome to the about page!")
+
+; Optionally, you can specify which document should be shown:
+; (show-document "index.stml")
+; If no `show-document` is provided, then the first document
+; is rendered.

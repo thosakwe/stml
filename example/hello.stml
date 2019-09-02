@@ -1,0 +1,6 @@
+; This is a comment!
+(version "0.0.0")
+(document
+  (title "Hello, STML!")
+  (heading "This is a simple page.")
+  (link "Github Page" "https://github.com/thosakwe/stml"))

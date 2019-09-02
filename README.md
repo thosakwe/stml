@@ -5,6 +5,7 @@ This is the home of `STML`, or the "Simple Text Markup Language."
 unless it gets so popular as to warrant long-term time investment. (unlikely)*
 
 ```stml
+; This is a comment!
 (version "0.0.0")
 (document
   (title "Hello, STML!")
