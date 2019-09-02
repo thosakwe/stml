@@ -33,7 +33,7 @@ payloads should typically be so small and easy to generate, that page loads shou
 as close to instantaneous as possible.
 
 ## This Repository
-* `spec` - The formal specification of STML.
+* `SPEC.md` - The formal specification of STML.
 
 Planned, but not yet present:
 
