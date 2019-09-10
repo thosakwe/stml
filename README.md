@@ -1,3 +1,8 @@
+# ARCHIVED
+After writing all the examples, and starting a draft of the spec, it hit me how pointless this is. If anybody thinks this remotely worth continuing, contact me.
+
+Otherwise: https://thosakwe.com/p/83068c2a-784b-492c-96cd-9aaa1df7cb3f/
+
 # Simple Text Markup Language
 This is the home of `STML`, or the "Simple Text Markup Language."
 
