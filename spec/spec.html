@@ -57,33 +57,33 @@
 <h2 id="abstract-syntax-tree">Abstract Syntax Tree</h2>
 <p>STML is first parsed into an abstract syntax tree, and is then “interpreted” by being rendered into some (typically on-screen) display. Documents that are syntactically valid may not be semantically valid. Creators of STML documents are advised to run validation tools before publishing content.</p>
 <p>The following is a <code>bison</code> grammar that will parse all valid syntax.</p>
-<pre class="bison"><code>compilation-unit: expression_list;
-
-expression:
-  IDENTIFIER
-  | NUMBER
-  | DOUBLE_QUOTE string_part_list DOUBLE_QUOTE
-  | expression QUESTION
-  | LPAREN expression RPAREN
-  | LPAREN nonempty_expression_list RPAREN;
-
-string_part_list:
-  %empty
-  | string_part_list string_part;
-
-string_part:
-  ESCAPED_QUOTE
-  | ESCAPED_HEX
-  | ESCAPED_UNICODE
-  | PLAIN_TEXT;
-
-expression_list:
-  %empty
-  | expression_list expression;
-
-nonempty_expression_list:
-  expression
-  | expression_list expression;</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yacc"><code class="sourceCode yacc"><a class="sourceLine" id="cb2-1" title="1">compilation-unit: expression_list;</a>
+<a class="sourceLine" id="cb2-2" title="2"></a>
+<a class="sourceLine" id="cb2-3" title="3">expression:</a>
+<a class="sourceLine" id="cb2-4" title="4">  IDENTIFIER</a>
+<a class="sourceLine" id="cb2-5" title="5">  | NUMBER</a>
+<a class="sourceLine" id="cb2-6" title="6">  | DOUBLE_QUOTE string_part_list DOUBLE_QUOTE</a>
+<a class="sourceLine" id="cb2-7" title="7">  | expression QUESTION</a>
+<a class="sourceLine" id="cb2-8" title="8">  | LPAREN expression RPAREN</a>
+<a class="sourceLine" id="cb2-9" title="9">  | LPAREN nonempty_expression_list RPAREN;</a>
+<a class="sourceLine" id="cb2-10" title="10"></a>
+<a class="sourceLine" id="cb2-11" title="11">string_part_list:</a>
+<a class="sourceLine" id="cb2-12" title="12">  <span class="kw">%empty</span></a>
+<a class="sourceLine" id="cb2-13" title="13">  | string_part_list string_part;</a>
+<a class="sourceLine" id="cb2-14" title="14"></a>
+<a class="sourceLine" id="cb2-15" title="15">string_part:</a>
+<a class="sourceLine" id="cb2-16" title="16">  ESCAPED_QUOTE</a>
+<a class="sourceLine" id="cb2-17" title="17">  | ESCAPED_HEX</a>
+<a class="sourceLine" id="cb2-18" title="18">  | ESCAPED_UNICODE</a>
+<a class="sourceLine" id="cb2-19" title="19">  | PLAIN_TEXT;</a>
+<a class="sourceLine" id="cb2-20" title="20"></a>
+<a class="sourceLine" id="cb2-21" title="21">expression_list:</a>
+<a class="sourceLine" id="cb2-22" title="22">  <span class="kw">%empty</span></a>
+<a class="sourceLine" id="cb2-23" title="23">  | expression_list expression;</a>
+<a class="sourceLine" id="cb2-24" title="24"></a>
+<a class="sourceLine" id="cb2-25" title="25">nonempty_expression_list:</a>
+<a class="sourceLine" id="cb2-26" title="26">  expression</a>
+<a class="sourceLine" id="cb2-27" title="27">  | expression_list expression;</a></code></pre></div>
 <h2 id="structure">Structure</h2>
 <p>In practice, a semantically valid file will look something like the following:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><a class="sourceLine" id="cb3-1" title="1"><span class="co">; This is a comment!</span></a>

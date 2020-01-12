@@ -47,7 +47,7 @@ run validation tools before publishing content.
 The following is a `bison` grammar that will parse
 all valid syntax.
 
-```bison
+```yacc
 compilation-unit: expression_list;
 
 expression:
