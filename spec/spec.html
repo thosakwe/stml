@@ -1,0 +1,95 @@
+<h1 id="the-simple-text-markup-language-specification">The Simple Text Markup Language Specification</h1>
+<p>This document serves as the formal specification of STML, the Simple Text Markup Language.</p>
+<h1 id="contents">Contents</h1>
+<ul>
+<li><a href="#about-stml">About STML</a></li>
+<li><a href="#syntax">Syntax</a>
+<ul>
+<li><a href="#tokens">Tokens</a></li>
+<li><a href="#abstract-syntax-tree">Abstract Syntax Tree</a></li>
+<li><a href="#structure">Structure</a></li>
+</ul></li>
+<li><a href="#transport">Transport</a></li>
+<li><a href="#elements">Elements</a>
+<ul>
+<li><a href="#document">Document</a></li>
+</ul></li>
+</ul>
+<h1 id="about-stml">About STML</h1>
+<p>STML is an <code>s-expression</code>-based format for encoding static content (note: the actual markup may be dynamically-created, but this does not happen on the client side).</p>
+<p>The goals of STML:</p>
+<ul>
+<li>Remain lightweight. No complex layout or styling rules should ever be added to STML. Writing an STML viewer should not be a high-difficulty endeavor.</li>
+<li>STML documents should be accessible (both in terms of being able to consume content regardless of physical abilities, and in terms of data usage).</li>
+<li>STML should primarily be a vehicle for transporting content, STML provides <a href="#form-controls">form controls</a>, in order to allow for interacting with servers, but these forms cannot be used automatically, or without the user’s approval. Intrusive advertisements and tracking tools that invade user privacy should be considered dark patterns, and actively prevented by both the specification, and STML viewers.</li>
+</ul>
+<h1 id="syntax">Syntax</h1>
+<p>STML syntax consists solely of s-expressions, which can be parsed very quickly.</p>
+<h2 id="tokens">Tokens</h2>
+<p>The following is a <code>flex</code> unit that will lex all valid syntax.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode flex"><code class="sourceCode lex"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">%x STRING</span></a>
+<a class="sourceLine" id="cb1-2" title="2"></a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="dt">NUMBER </span><span class="st">-?[0-9]+(\.[0-9]+)?</span></a>
+<a class="sourceLine" id="cb1-4" title="4"><span class="dt">ID </span><span class="st">[A-Za-z][A-Za-z0-9]*(-([A-Za-z][A-Za-z0-9]*))*</span></a>
+<a class="sourceLine" id="cb1-5" title="5"><span class="dt">WHITESPACE </span><span class="st">[ \n\r\t]+</span></a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="dt">COMMENT </span><span class="st">;[^\n]*</span></a>
+<a class="sourceLine" id="cb1-7" title="7"></a>
+<a class="sourceLine" id="cb1-8" title="8"><span class="dt">HEX </span><span class="st">\\x[A-Fa-f0-9][A-Fa-f0-9]</span></a>
+<a class="sourceLine" id="cb1-9" title="9"><span class="dt">UNICODE </span><span class="st">\\u\{[A-Fa-f0-9]+\}</span></a>
+<a class="sourceLine" id="cb1-10" title="10"></a>
+<a class="sourceLine" id="cb1-11" title="11"><span class="bn">%%</span></a>
+<a class="sourceLine" id="cb1-12" title="12"></a>
+<a class="sourceLine" id="cb1-13" title="13"><span class="st">WHITESPACE</span> ;</a>
+<a class="sourceLine" id="cb1-14" title="14"><span class="st">COMMENT</span> ;</a>
+<a class="sourceLine" id="cb1-15" title="15"></a>
+<a class="sourceLine" id="cb1-16" title="16"><span class="st">&#39;(&#39; return LPAREN;</span></a>
+<a class="sourceLine" id="cb1-17" title="17"><span class="st">&#39;)&#39;</span> <span class="cf">return</span> RPAREN;</a>
+<a class="sourceLine" id="cb1-18" title="18"><span class="st">&#39;?&#39;</span> <span class="cf">return</span> QUESTION;</a>
+<a class="sourceLine" id="cb1-19" title="19"><span class="st">&#39;&quot;&#39; { yy_push_state(STRING); return DOUBLE_QUOTE; }</span></a>
+<a class="sourceLine" id="cb1-20" title="20"><span class="st">{NUMBER} return NUMBER;</span></a>
+<a class="sourceLine" id="cb1-21" title="21"><span class="st">{ID} return IDENTIFIER;</span></a>
+<a class="sourceLine" id="cb1-22" title="22"></a>
+<a class="sourceLine" id="cb1-23" title="23"><span class="st">&lt;STRING&gt;\\&quot;</span> <span class="cf">return</span> ESCAPED_QUOTE;</a>
+<a class="sourceLine" id="cb1-24" title="24"><span class="st">&lt;STRING&gt;{HEX}</span> <span class="cf">return</span> ESCAPED_HEX;</a>
+<a class="sourceLine" id="cb1-25" title="25"><span class="st">&lt;STRING&gt;{UNICODE}</span> <span class="cf">return</span> ESCAPED_UNICODE;</a>
+<a class="sourceLine" id="cb1-26" title="26"><span class="st">&lt;STRING&gt;&#39;&quot;&#39; { yy_pop_state(); return DOUBLE_QUOTE; }</span></a>
+<a class="sourceLine" id="cb1-27" title="27"><span class="st">&lt;STRING&gt;.+ return PLAIN_TEXT;</span></a></code></pre></div>
+<h2 id="abstract-syntax-tree">Abstract Syntax Tree</h2>
+<p>STML is first parsed into an abstract syntax tree, and is then “interpreted” by being rendered into some (typically on-screen) display. Documents that are syntactically valid may not be semantically valid. Creators of STML documents are advised to run validation tools before publishing content.</p>
+<p>The following is a <code>bison</code> grammar that will parse all valid syntax.</p>
+<pre class="bison"><code>compilation-unit: expression_list;
+
+expression:
+  IDENTIFIER
+  | NUMBER
+  | DOUBLE_QUOTE string_part_list DOUBLE_QUOTE
+  | expression QUESTION
+  | LPAREN expression RPAREN
+  | LPAREN nonempty_expression_list RPAREN;
+
+string_part_list:
+  %empty
+  | string_part_list string_part;
+
+string_part:
+  ESCAPED_QUOTE
+  | ESCAPED_HEX
+  | ESCAPED_UNICODE
+  | PLAIN_TEXT;
+
+expression_list:
+  %empty
+  | expression_list expression;
+
+nonempty_expression_list:
+  expression
+  | expression_list expression;</code></pre>
+<h2 id="structure">Structure</h2>
+<p>In practice, a semantically valid file will look something like the following:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><a class="sourceLine" id="cb3-1" title="1"><span class="co">; This is a comment!</span></a>
+<a class="sourceLine" id="cb3-2" title="2">(version <span class="st">&quot;0.0.0&quot;</span>)</a>
+<a class="sourceLine" id="cb3-3" title="3">(document</a>
+<a class="sourceLine" id="cb3-4" title="4">  (title <span class="st">&quot;Hello, STML!&quot;</span>)</a>
+<a class="sourceLine" id="cb3-5" title="5">  (heading <span class="st">&quot;This is a simple page.&quot;</span>)</a>
+<a class="sourceLine" id="cb3-6" title="6">  (link <span class="st">&quot;Github Page&quot;</span> <span class="st">&quot;https://github.com/thosakwe/stml&quot;</span>))</a></code></pre></div>
+<p>The root node is the <a href="#compilation-unit">Compilation Unit</a>; start there.</p>

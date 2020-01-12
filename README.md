@@ -1,8 +1,3 @@
-# ARCHIVED
-After writing all the examples, and starting a draft of the spec, it hit me how pointless this is. If anybody thinks this remotely worth continuing, contact me.
-
-Otherwise: https://thosakwe.com/p/83068c2a-784b-492c-96cd-9aaa1df7cb3f/
-
 # Simple Text Markup Language
 This is the home of `STML`, or the "Simple Text Markup Language."
 
@@ -47,7 +42,7 @@ Planned, but not yet present:
 STML responses to HTML, for display in regular browsers.
 * `libstml` - A C library for generating, parsing, and validating
 STML documents, and converting them to HTML-formatted text.
-* `stml.js` - A JavaScript library for emitting compliant STML.
+* `stml.js` - A JavaScript library for emitting and parsing compliant STML.
 * `dart_stml` - A Dart library for emitting STML.
 * `angel_stml` - An [Angel framework](https:/angel-dart-dev)
 extension for sending STML responses.
